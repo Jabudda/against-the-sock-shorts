@@ -112,11 +112,11 @@
   .strip img{display:block; margin:0 auto; max-height:8.6em; max-width:96%; border:.28em solid #fdfbf4; box-shadow:0 .25em .7em rgba(60,40,15,.35); transform:rotate(var(--tilt,-.5deg))}
   .strip .sc{font-size:.54em; color:#6d573a; margin-top:.4em}
   .page.reel{justify-content:space-evenly}
-  .watch{display:inline-block; font-family:var(--type); font-size:.55em; letter-spacing:.03em; border:none; cursor:pointer;
+  .watch{display:inline-block; font-family:var(--type); font-size:max(.55em, 11.5px); letter-spacing:.03em; border:none; cursor:pointer;
     background:var(--red); color:#ffe9c9; padding:.4em .9em; border-radius:999px;
     text-decoration:none; box-shadow:0 2px 6px rgba(0,0,0,.3)}
   .watch:hover{background:#d0402b}
-  .strip .watch{position:absolute; right:5%; top:7%; font-size:.5em}
+  .strip .watch{position:absolute; right:5%; top:7%; font-size:max(.5em, 11px)}
   .cap .watch{margin-left:.8em; vertical-align:middle}
   .origcv{width:48%; border:.35em solid #fdfbf4; box-shadow:0 .35em .9em rgba(60,40,15,.4); transform:rotate(-2deg)}
   .board .grain{position:absolute; inset:0;
@@ -182,8 +182,11 @@
   .tape::after{top:1.5%; right:14%; transform:rotate(40deg)}
   .scan .mic{
     position:absolute; right:3%; top:3%; z-index:3;
-    font-size:.62em; background:#2c241d; color:#ffe9c9; border:none; border-radius:999px;
+    font-size:max(.62em, 12px); background:#2c241d; color:#ffe9c9; border:none; border-radius:999px;
     padding:.4em .75em; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,.35);
+  }
+  @media (max-width:920px){
+    .strip .watch{top:auto; bottom:2%; right:2%}
   }
   .scan .mic:hover{background:#4a3a28}
   .confetti{position:absolute; z-index:70; pointer-events:none}
