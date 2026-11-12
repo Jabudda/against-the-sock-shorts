@@ -314,8 +314,9 @@
   .theater{position:fixed; inset:0; z-index:200; background:rgba(14,9,4,.9); display:none;
     align-items:center; justify-content:center; flex-direction:column; gap:16px; padding:3vh 3vw}
   .theater.on{display:flex}
-  .theater video{width:min(88vw, 152vh); max-height:78vh; background:#000;
+  .theater video, .theater iframe{width:min(88vw, 152vh); max-height:78vh; background:#000;
     border:10px solid #17100b; border-radius:8px; box-shadow:0 30px 80px rgba(0,0,0,.85)}
+  .theater iframe{aspect-ratio:16/9; height:auto}
   .th-bar{color:#ffe9c9; font-family:var(--type); font-size:14px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; justify-content:center}
   .th-bar a{color:#ffd27f}
   .th-close{font-family:var(--type); font-size:14px; color:#f3e6c8; background:rgba(255,240,210,.1);
@@ -722,6 +723,9 @@ FOREVER GRATEFUL.</p></div>
 
 <div class="theater" id="theater">
     <video id="thvid" controls playsinline preload="metadata"></video>
+    <iframe id="thyt" hidden title="Against the S.O.C.K. — Chapter One"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      referrerpolicy="strict-origin-when-cross-origin" allowfullscreen frameborder="0"></iframe>
     <div class="th-bar">
       <span id="thtitle"></span>
       <span id="thnote" hidden>streaming is blocked in this viewer &mdash;</span>
@@ -975,7 +979,7 @@ FOREVER GRATEFUL.</p></div>
 
   /* episode links — fill in a URL and that card gets a watch button */
   var EP_LINKS = {
-    feature: "https://drive.google.com/file/d/11CSqzk6GluFn94SSTJUzD0KNwI1cMNLa/view",  // Chapter One, full episode
+    feature: "https://youtu.be/P9CmB1iOGig",  // Chapter One, full episode on YouTube
     ep2: "https://drive.google.com/file/d/1D3z2FhcCoDILKyKaz4HqyZFxpk4B_4M2/view",  // ep 1 — Behold My P.O.O.
     ep3: "https://drive.google.com/file/d/1tjPYZC9GNQbMs6SlHv6kEEhWgmkY3uYp/view",  // ep 2 — Everybody Can Hear the Narrators
     ep4: "https://drive.google.com/file/d/1mlzj9sRbcT3D1s2XhAc4QBSsdhAo4bhn/view",  // ep 3 — Page 9 A A
@@ -994,15 +998,29 @@ FOREVER GRATEFUL.</p></div>
   };
   var theater = document.getElementById('theater');
   var thvid = document.getElementById('thvid');
+  var thyt = document.getElementById('thyt');
   var thtitle = document.getElementById('thtitle');
   var thnote = document.getElementById('thnote');
   var thdrive = document.getElementById('thdrive');
   function openTheater(key){
     narrStop(); themeStop();
+    thnote.hidden = true;
+    if(key === 'feature'){
+      thtitle.textContent = 'Chapter One \u00b7 The Voices From Nowhere';
+      thdrive.textContent = 'open on YouTube';
+      thdrive.href = EP_LINKS.feature;
+      thvid.hidden = true; thvid.removeAttribute('src');
+      thyt.hidden = false;
+      thyt.src = 'https://www.youtube.com/embed/P9CmB1iOGig?start=1&autoplay=1';
+      theater.classList.add('on');
+      return;
+    }
     var v = EP_VIDEO[key];
     thtitle.textContent = v.t;
-    thnote.hidden = true;
+    thdrive.textContent = 'open on Google Drive';
     thdrive.href = EP_LINKS[key] || '#';
+    thyt.hidden = true; thyt.removeAttribute('src');
+    thvid.hidden = false;
     thvid.src = EP_REPO + v.f;
     theater.classList.add('on');
     thvid.play().catch(function(){});
@@ -1010,6 +1028,7 @@ FOREVER GRATEFUL.</p></div>
   function closeTheater(){
     try{ thvid.pause(); }catch(e){}
     thvid.removeAttribute('src'); thvid.load();
+    thyt.removeAttribute('src');
     theater.classList.remove('on');
   }
   thvid.addEventListener('error', function(){ thnote.hidden = false; });
@@ -1019,17 +1038,11 @@ FOREVER GRATEFUL.</p></div>
   Object.keys(EP_LINKS).forEach(function(k){
     var url = EP_LINKS[k]; if(!url) return;
     var el = document.querySelector('[data-ep="'+k+'"]'); if(!el) return;
-    if(EP_VIDEO[k]){
-      var bEl = document.createElement('button');
-      bEl.className = 'watch'; bEl.textContent = '\u25B6 watch';
-      bEl.addEventListener('click', function(e){ e.stopPropagation(); openTheater(k); });
-      el.appendChild(bEl);
-    } else {
-      var aEl = document.createElement('a');
-      aEl.className = 'watch'; aEl.href = url; aEl.target = '_blank'; aEl.rel = 'noopener';
-      aEl.textContent = k === 'feature' ? '\u25B6 watch the full chapter' : '\u25B6 watch';
-      el.appendChild(aEl);
-    }
+    var bEl = document.createElement('button');
+    bEl.className = 'watch';
+    bEl.textContent = k === 'feature' ? '\u25B6 watch the full chapter' : '\u25B6 watch';
+    bEl.addEventListener('click', function(e){ e.stopPropagation(); openTheater(k); });
+    el.appendChild(bEl);
   });
 
   /* responsive em sizing */
